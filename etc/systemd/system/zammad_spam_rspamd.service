@@ -1,0 +1,7 @@
+[Unit]
+Description=Periodically send Tickets tagged as spam to rspamd
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/zammad_rspamd_spam
+ExecStart=/opt/zammad_rspamd_spam/tag.sh
