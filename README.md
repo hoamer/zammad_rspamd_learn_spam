@@ -1,0 +1,1 @@
+# zammad_rspamd_learn_spam
