@@ -6,6 +6,7 @@ ZAMMAD_TOKEN="zammad_token"
 RSPAMD_PASSWORD="rspamd_password"
 QUERY_SPAM='tags:spam'   # Adjust to your Zammad spam query
 QUERY_HAM='tags:ham'     # Adjust to your Zammad ham query
+RSPAMD_IN_DOCKER="true"
 
 AUTH_HEADER="Authorization: Token token=$ZAMMAD_TOKEN"
 
@@ -43,11 +44,17 @@ process_zammad() {
       # Save a temp file
       # Learn as spam or ham
       if [ "$process_spam" = "true" ]; then
-        #echo "$plain_article" | docker exec mailcowdockerized_rspamd-mailcow_1 rspamc -P "$RSPAMD_PASSWORD" learn_spam
-        cat tempmail | docker exec -i mailcowdockerized_rspamd-mailcow_1 rspamc -P "$RSPAMD_PASSWORD" learn_spam
+        if [ "$RSPAMD_IN_DOCKER" == "true" ]; then
+                cat tempmail | docker exec -i mailcowdockerized_rspamd-mailcow_1 rspamc -P "$RSPAMD_PASSWORD" learn_spam
+        else
+                cat tempmail | rspamc -P "$RSPAMD_PASSWORD" learn_spam
+        fi
       else
-        #echo "$plain_article" | docker exec mailcowdockerized_rspamd-mailcow_1 rspamc -P "$RSPAMD_PASSWORD" learn_ham
-        cat tempmail | docker exec -i mailcowdockerized_rspamd-mailcow_1 rspamc -P "$RSPAMD_PASSWORD" learn_ham
+        if [ "$RSPAMD_IN_DOCKER" == "true" ]; then
+                cat tempmail | docker exec -i mailcowdockerized_rspamd-mailcow_1 rspamc -P "$RSPAMD_PASSWORD" learn_ham
+        else
+                cat tempmail | rspamc -P "$RSPAMD_PASSWORD" learn_ham
+        fi
       fi
 
       # Mark ticket as learned
